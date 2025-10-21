@@ -8,7 +8,7 @@
 
 📺 **Video Demo**: [demo.mp4]
 🌐 **Live Contract**: [View on Sepolia](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)
-🌐 **Live Demo**: [View on Sepolia](https://fhe-power-consumption-optimizer.vercel.app) 
+🌐 **Live Demo**: [View ](https://fhe-power-consumption-optimizer.vercel.app) 
 ---
 
 ## 📋 Overview
