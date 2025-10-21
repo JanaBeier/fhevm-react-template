@@ -6,7 +6,7 @@
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.24-blue.svg)](https://soliditylang.org/)
 [![FHE](https://img.shields.io/badge/FHE-Zama-purple.svg)](https://www.zama.ai/)
 
-📺 **Video Demo**: [demo.mp4](./demo.mp4)
+📺 **Video Demo**: [demo.mp4]
 🌐 **Live Contract**: [View on Sepolia](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)
 
 ---
