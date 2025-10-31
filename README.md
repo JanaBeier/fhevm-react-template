@@ -20,21 +20,22 @@
 
 This is a **complete development template** for building privacy-preserving applications using **Zama's FHEVM** (Fully Homomorphic Encryption Virtual Machine). It includes:
 
-- 🎯 **FHEVM SDK** - React hooks and utilities for encryption/decryption
+- 🎯 **Universal FHEVM SDK** - Framework-agnostic SDK with React & Vue adapters
 - ⚡ **Smart Contract Examples** - Production-ready FHE contracts
-- 🔧 **Development Tools** - Hardhat, TypeScript, testing frameworks
-- 📦 **Example Applications** - Next.js and React demonstrations
-- 🚀 **Deployment Scripts** - Ready for Sepolia testnet
+- 🔧 **Development Tools** - Hardhat, TypeScript, comprehensive testing
+- 📦 **Example Applications** - Next.js demonstrations with full SDK integration
+- 🚀 **Deployment Ready** - Live on Sepolia testnet with verification
 
 ### What This Template Provides
 
-✅ **FHEVM SDK Integration**: React hooks (`useEncrypt`, `useDecrypt`, `useContract`)
+✅ **Universal SDK**: Framework-agnostic core with React hooks and Vue composables
+✅ **Multi-Framework Support**: React, Vue.js adapters included
 ✅ **Encrypted Data Types**: Work with `euint32`, `euint16`, `euint8`, and `ebool`
 ✅ **Homomorphic Operations**: Use `FHE.add()`, `FHE.sub()`, `FHE.mul()`, `FHE.ge()`, `FHE.select()`
 ✅ **Permission Management**: Control data access with `FHE.allow()` and `FHE.allowThis()`
-✅ **Complete Examples**: Two production-ready example applications
+✅ **Complete Examples**: Production-ready Next.js application with full SDK integration
 ✅ **Testing Suite**: 51+ comprehensive tests with 95% coverage
-✅ **Production Ready**: Gas-optimized, security-hardened, fully documented
+✅ **Production Ready**: Gas-optimized, security-hardened, fully documented, deployed on Sepolia
 
 ### Example Application: PowerConsumptionOptimizer
 
@@ -492,6 +493,89 @@ export default function EnergyDashboard() {
 }
 ```
 
+### Vue.js Integration
+
+The SDK also provides Vue.js composables for integration with Vue 3 applications:
+
+```vue
+<script setup>
+import { useFhevm, useEncryption } from '@fhevm-example/sdk';
+import { ref } from 'vue';
+
+// FHEVM client setup
+const config = {
+  provider: window.ethereum,
+  gatewayUrl: 'https://gateway.sepolia.zama.ai',
+};
+
+const { client, isInitialized, error, encrypt32, encrypt16 } = useFhevm(config);
+const { isEncrypting, encryptionError, encryptValue } = useEncryption(client);
+
+// Reactive state
+const powerUsage = ref(1500);
+const result = ref(null);
+
+// Encrypt data
+async function handleEncrypt() {
+  const encrypted = await encrypt32(powerUsage.value);
+  result.value = encrypted;
+  console.log('Encrypted:', encrypted);
+}
+
+// Advanced encryption with type selection
+async function encryptCustom() {
+  const encrypted = await encryptValue(powerUsage.value, 'euint32');
+  result.value = encrypted;
+}
+</script>
+
+<template>
+  <div class="container">
+    <div v-if="!isInitialized">
+      <p>Initializing FHEVM...</p>
+    </div>
+
+    <div v-else-if="error">
+      <p class="error">Error: {{ error.message }}</p>
+    </div>
+
+    <div v-else>
+      <h2>FHEVM Ready!</h2>
+
+      <div class="input-group">
+        <input
+          v-model.number="powerUsage"
+          type="number"
+          placeholder="Enter power usage"
+        />
+        <button
+          @click="handleEncrypt"
+          :disabled="isEncrypting"
+        >
+          {{ isEncrypting ? 'Encrypting...' : 'Encrypt Value' }}
+        </button>
+      </div>
+
+      <div v-if="result" class="result">
+        <h3>Encrypted Result:</h3>
+        <pre>{{ JSON.stringify(result, null, 2) }}</pre>
+      </div>
+
+      <p v-if="encryptionError" class="error">
+        Encryption Error: {{ encryptionError.message }}
+      </p>
+    </div>
+  </div>
+</template>
+```
+
+**Key Features of Vue Adapter:**
+- ✅ Reactive composables with Vue 3 Composition API
+- ✅ Automatic lifecycle management (init on mount, cleanup on unmount)
+- ✅ Full TypeScript support
+- ✅ Same API as React hooks for consistency
+- ✅ Error handling and loading states
+
 ---
 
 ## 📁 Project Structure
@@ -541,20 +625,68 @@ fhevm-react-template/
 │   │   │   └── api.ts               # API type definitions
 │   │   └── README.md                # Next.js example documentation
 │   │
-│   └── power-optimizer/             # Smart contract example
-│       ├── contracts/
-│       │   └── PowerConsumptionOptimizer.sol
-│       ├── scripts/
-│       │   ├── deploy.js
-│       │   ├── verify.js
-│       │   └── interact.js
-│       ├── test/
-│       │   ├── PowerConsumptionOptimizer.test.js
-│       │   └── PowerConsumptionOptimizer.sepolia.test.js
-│       └── README.md                # Smart contract example documentation
+│   ├── power-optimizer/             # Static HTML example
+│       │   ├── contracts/
+│       │   │   └── PowerConsumptionOptimizer.sol
+│       │   ├── public/
+│       │   │   ├── index.html
+│       │   │   └── app.js
+│       │   ├── scripts/
+│       │   │   ├── deploy.js
+│       │   │   ├── verify.js
+│       │   │   └── interact.js
+│       │   ├── test/
+│       │   │   ├── PowerConsumptionOptimizer.test.js
+│       │   │   └── PowerConsumptionOptimizer.sepolia.test.js
+│       │   └── README.md
+│       │
+│       └── power-optimizer-react/   # React example with Vite
+│           ├── src/
+│           │   ├── components/      # React components
+│           │   │   ├── WalletConnect.tsx
+│           │   │   ├── DeviceRegistration.tsx
+│           │   │   ├── ConsumptionUpdate.tsx
+│           │   │   ├── SystemStats.tsx
+│           │   │   ├── DeviceList.tsx
+│           │   │   └── AlertList.tsx
+│           │   ├── hooks/           # Custom React hooks
+│           │   │   ├── useWallet.ts
+│           │   │   ├── usePowerContract.ts
+│           │   │   └── useAlerts.ts
+│           │   ├── lib/             # Contract ABI and types
+│           │   │   ├── contract.ts
+│           │   │   └── types.ts
+│           │   ├── styles/
+│           │   │   └── App.css
+│           │   ├── App.tsx
+│           │   └── main.tsx
+│           ├── index.html
+│           ├── package.json
+│           ├── vite.config.ts
+│           └── README.md
 │
-├── packages/                         # Shared packages (optional)
-│   └── fhevm-sdk/                   # FHEVM SDK source (if building from source)
+├── packages/                         # Shared packages
+│   └── fhevm-sdk/                   # Universal FHEVM SDK
+│       ├── src/
+│       │   ├── core/                # Core SDK functionality
+│       │   │   └── fhevm.ts         # Main FHEVM client class
+│       │   ├── hooks/               # React hooks
+│       │   │   ├── useFhevm.ts      # Main FHEVM hook
+│       │   │   ├── useEncrypt.ts    # Encryption hook
+│       │   │   ├── useDecrypt.ts    # Decryption hook
+│       │   │   └── useContract.ts   # Contract interaction hook
+│       │   ├── adapters/            # Framework adapters
+│       │   │   └── vue.ts           # Vue.js composables
+│       │   ├── utils/               # Utility functions
+│       │   │   ├── encryption.ts    # Encryption utilities
+│       │   │   └── decryption.ts    # Decryption utilities
+│       │   ├── types/               # TypeScript type definitions
+│       │   │   └── index.ts         # Core types
+│       │   ├── provider.tsx         # React context provider
+│       │   └── index.ts             # Main entry point
+│       ├── package.json
+│       ├── tsconfig.json
+│       └── README.md
 │
 ├── docs/                            # Documentation
 │   ├── ARCHITECTURE.md
@@ -571,7 +703,7 @@ fhevm-react-template/
 
 ## 📚 Included Examples
 
-This template includes two complete example applications:
+This template includes three complete example applications:
 
 ### 1. Next.js Example (`examples/nextjs-example/`)
 
@@ -594,34 +726,56 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000) to see the demo.
 
-**What it demonstrates:**
-- Encrypting different data types (euint32, euint16, euint8, ebool)
-- Interacting with smart contracts using `useContract` hook
-- Managing encrypted state in React components
-- Building a complete privacy-preserving dashboard
+### 2. Power Optimizer React (`examples/power-optimizer-react/`)
 
-[View Full Documentation →](examples/nextjs-example/README.md)
-
----
-
-### 2. PowerConsumptionOptimizer Example (`examples/power-optimizer/`)
-
-**Production-ready smart contract demonstrating FHE operations**
+**Modern React + Vite application for energy management**
 
 Features:
-- ✅ Complete Solidity contract using encrypted types
-- ✅ Homomorphic operations (add, sub, mul, ge, select)
-- ✅ Permission management (FHE.allow, FHE.allowThis)
+- ✅ React 18 with TypeScript
+- ✅ Custom hooks for wallet and contract interaction
+- ✅ Vite for lightning-fast builds
+- ✅ Component-based architecture
+- ✅ Real-time statistics and monitoring
+- ✅ Full FHEVM integration
+- ✅ Live on Sepolia testnet
+
+**Quick Start:**
+```bash
+cd examples/power-optimizer-react
+npm install
+npm run dev
+```
+
+Open [http://localhost:5173](http://localhost:5173) to see the demo.
+
+**Live Demo**: Connected to deployed contract at `0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5`
+
+[View Full Documentation →](examples/power-optimizer-react/README.md)
+
+### 3. Power Optimizer Static (`examples/power-optimizer/`)
+
+**Static HTML + Smart Contract example**
+
+Features:
+- ✅ Vanilla JavaScript implementation
+- ✅ Production-ready smart contract
 - ✅ Deployed and verified on Sepolia testnet
 - ✅ 51 comprehensive tests with 95%+ coverage
-- ✅ Security-hardened with pre-commit hooks
+- ✅ No build step required
 
 **Quick Start:**
 ```bash
 cd examples/power-optimizer
 npm install
+
+# Run tests
 npm test
+
+# Deploy contract
 npm run deploy
+
+# Serve static frontend
+npm run dev  # or use any static server
 ```
 
 **What it demonstrates:**
@@ -630,10 +784,28 @@ npm run deploy
 - Privacy-preserving analytics
 - Permission-based access control
 - Gas-optimized FHE operations
+- Static HTML dApp development
 
 **Live Contract:** [0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)
 
 [View Full Documentation →](examples/power-optimizer/README.md)
+
+---
+
+## 🎯 Example Comparison
+
+| Feature | Next.js | Power Optimizer React | Power Optimizer Static |
+|---------|---------|----------------------|----------------------|
+| **Framework** | Next.js 14 | React 18 + Vite | Vanilla JS |
+| **Build Tool** | Next.js | Vite | None |
+| **TypeScript** | ✅ Yes | ✅ Yes | ❌ No |
+| **SDK Integration** | ✅ Full | ✅ Full | ⚠️ Manual |
+| **Server-Side** | ✅ API Routes | ❌ No | ❌ No |
+| **Components** | ✅ React | ✅ React | ❌ HTML |
+| **Hot Reload** | ✅ Yes | ✅ Yes | ⚠️ Manual |
+| **Best For** | Full-stack apps | Modern SPAs | Simple demos |
+| **Complexity** | Advanced | Intermediate | Beginner |
+| **Performance** | High | Very High | Moderate |
 
 ---
 

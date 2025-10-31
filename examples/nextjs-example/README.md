@@ -1,34 +1,131 @@
-# Next.js FHEVM Example
+# Next.js FHEVM SDK Integration Example
 
-> Complete Next.js application demonstrating FHEVM SDK integration
+> Complete Next.js 13+ application demonstrating FHEVM SDK integration with App Router
 
 ## Overview
 
-This example shows how to integrate the `@fhevm-example/sdk` in a Next.js application, demonstrating:
+This example demonstrates a production-ready integration of the FHEVM SDK in a Next.js application using the App Router architecture. It showcases:
 
-- ✅ FhevmProvider setup in Next.js
-- ✅ React hooks for encryption/decryption
-- ✅ Smart contract interaction with encrypted data
-- ✅ Client-side rendering with FHEVM
-- ✅ TypeScript support
+- ✅ **App Router Structure** - Next.js 13+ with server and client components
+- ✅ **SDK Integration** - Complete integration of @fhevm-example/sdk
+- ✅ **React Hooks** - Custom hooks for encryption, decryption, and computation
+- ✅ **API Routes** - Server-side FHE operations
+- ✅ **Type Safety** - Full TypeScript support
+- ✅ **Real-World Examples** - Banking and medical use cases
 
 ## Features
 
 ### 1. Encryption Demo
 
-Demonstrates encrypting different data types:
+Demonstrates encrypting different data types using the SDK:
+
 - **euint32** - 32-bit unsigned integers (0 to 4,294,967,295)
 - **euint16** - 16-bit unsigned integers (0 to 65,535)
 - **euint8** - 8-bit unsigned integers (0 to 255)
 - **ebool** - Boolean values (true/false)
 
-### 2. Contract Interaction
+**Location**: `components/fhe/EncryptionDemo.tsx`
 
-Interact with the PowerConsumptionOptimizer smart contract:
-- Register devices
-- Update consumption data (encrypted)
-- Query device information
-- View total registered devices
+### 2. Computation Demo
+
+Shows homomorphic computation on encrypted data:
+
+- Addition on encrypted values
+- Subtraction on encrypted values
+- Multiplication on encrypted values
+- Results remain encrypted
+
+**Location**: `components/fhe/ComputationDemo.tsx`
+
+### 3. Key Manager
+
+Public key management interface:
+
+- Fetch public encryption key
+- Refresh keys
+- View key information
+
+**Location**: `components/fhe/KeyManager.tsx`
+
+### 4. Banking Example
+
+Privacy-preserving financial transactions:
+
+- Encrypted account balances
+- Deposit and withdrawal operations
+- Transaction history
+- Owner-only decryption
+
+**Location**: `components/examples/BankingExample.tsx`
+
+### 5. Medical Example
+
+Healthcare data privacy demonstration:
+
+- Encrypted medical records
+- Heart rate, blood pressure, glucose tracking
+- Privacy-compliant data handling
+- HIPAA-friendly architecture
+
+**Location**: `components/examples/MedicalExample.tsx`
+
+## Project Structure
+
+```
+nextjs-example/
+├── app/                          # Next.js App Router
+│   ├── layout.tsx                # Root layout with FhevmProvider
+│   ├── page.tsx                  # Main page with tabbed interface
+│   ├── globals.css               # Global styles
+│   └── api/                      # API Routes
+│       ├── fhe/
+│       │   ├── route.ts          # Main FHE endpoint
+│       │   ├── encrypt/route.ts  # Encryption API
+│       │   ├── decrypt/route.ts  # Decryption API
+│       │   └── compute/route.ts  # Computation API
+│       └── keys/route.ts         # Key management API
+│
+├── components/
+│   ├── ui/                       # Base UI Components
+│   │   ├── Button.tsx            # Reusable button with variants
+│   │   ├── Input.tsx             # Input with validation
+│   │   └── Card.tsx              # Card container
+│   │
+│   ├── fhe/                      # FHE Components
+│   │   ├── FHEProvider.tsx       # FHE context provider
+│   │   ├── EncryptionDemo.tsx    # Encryption demonstration
+│   │   ├── ComputationDemo.tsx   # Computation demonstration
+│   │   └── KeyManager.tsx        # Key management
+│   │
+│   └── examples/                 # Example Use Cases
+│       ├── BankingExample.tsx    # Banking use case
+│       └── MedicalExample.tsx    # Medical use case
+│
+├── lib/                          # Utility Libraries
+│   ├── fhe/                      # FHE Integration
+│   │   ├── client.ts             # Client-side operations
+│   │   ├── server.ts             # Server-side operations
+│   │   ├── keys.ts               # Key management
+│   │   └── types.ts              # FHE type definitions
+│   │
+│   └── utils/                    # Helper Functions
+│       ├── security.ts           # Security utilities
+│       └── validation.ts         # Input validation
+│
+├── hooks/                        # Custom React Hooks
+│   ├── useFHE.ts                 # Extended FHE hook
+│   ├── useEncryption.ts          # Encryption utilities
+│   └── useComputation.ts         # Computation utilities
+│
+├── types/                        # TypeScript Types
+│   ├── fhe.ts                    # FHE type definitions
+│   └── api.ts                    # API types
+│
+├── package.json
+├── next.config.js
+├── tsconfig.json
+└── README.md
+```
 
 ## Quick Start
 
@@ -36,13 +133,16 @@ Interact with the PowerConsumptionOptimizer smart contract:
 
 ```bash
 Node.js >= 18.0.0
-MetaMask browser extension
-Sepolia ETH (get from faucets)
+npm or yarn
+MetaMask browser extension (for blockchain interaction)
 ```
 
 ### Installation
 
 ```bash
+# Navigate to the example directory
+cd examples/nextjs-example
+
 # Install dependencies
 npm install
 
@@ -59,48 +159,37 @@ npm run build
 npm start
 ```
 
-## Project Structure
+## SDK Integration Guide
 
-```
-nextjs-example/
-├── pages/
-│   ├── _app.tsx          # App wrapper with FhevmProvider
-│   └── index.tsx         # Home page with tabs
-├── components/
-│   ├── EncryptDemo.tsx   # Encryption demonstration
-│   └── ContractInteraction.tsx  # Contract interaction
-├── styles/
-│   └── globals.css       # Global styles
-├── package.json
-├── next.config.js
-├── tsconfig.json
-└── README.md
-```
+### 1. Setup Provider
 
-## Usage Examples
-
-### Setup Provider
+Wrap your application with `FhevmProvider` in the root layout:
 
 ```tsx
-// pages/_app.tsx
+// app/layout.tsx
 import { FhevmProvider } from '@fhevm-example/sdk';
 
-export default function App({ Component, pageProps }) {
+export default function RootLayout({ children }) {
   return (
-    <FhevmProvider config={{ network: 'sepolia' }}>
-      <Component {...pageProps} />
-    </FhevmProvider>
+    <html lang="en">
+      <body>
+        <FhevmProvider config={{ network: 'sepolia' }}>
+          {children}
+        </FhevmProvider>
+      </body>
+    </html>
   );
 }
 ```
 
-### Use Encryption Hook
+### 2. Use Encryption Hook
 
 ```tsx
-// components/YourComponent.tsx
+'use client';
+
 import { useEncrypt } from '@fhevm-example/sdk';
 
-export default function YourComponent() {
+export default function MyComponent() {
   const { encrypt32, isEncrypting } = useEncrypt();
 
   const handleEncrypt = async () => {
@@ -110,24 +199,24 @@ export default function YourComponent() {
 
   return (
     <button onClick={handleEncrypt} disabled={isEncrypting}>
-      Encrypt Value
+      {isEncrypting ? 'Encrypting...' : 'Encrypt Value'}
     </button>
   );
 }
 ```
 
-### Use Contract Hook
+### 3. Use Contract Hook
 
 ```tsx
 import { useContract } from '@fhevm-example/sdk';
+import { PowerConsumptionOptimizerABI } from './abis';
 
-const CONTRACT_ABI = [...];
-const CONTRACT_ADDRESS = '0x...';
+const CONTRACT_ADDRESS = '0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5';
 
 export default function ContractComponent() {
   const { call, send, isLoading } = useContract({
     address: CONTRACT_ADDRESS,
-    abi: CONTRACT_ABI,
+    abi: PowerConsumptionOptimizerABI,
   });
 
   const registerDevice = async () => {
@@ -135,138 +224,341 @@ export default function ContractComponent() {
     await tx.wait();
   };
 
-  const getTotal = async () => {
-    const total = await call('totalDevices');
-    console.log('Total devices:', total.toString());
-  };
-
   return (
-    <>
-      <button onClick={registerDevice}>Register</button>
-      <button onClick={getTotal}>Get Total</button>
-    </>
+    <button onClick={registerDevice} disabled={isLoading}>
+      Register Device
+    </button>
   );
 }
 ```
 
-## Configuration
+### 4. Create API Routes
 
-### Environment Variables
+```typescript
+// app/api/fhe/encrypt/route.ts
+import { NextRequest, NextResponse } from 'next/server';
 
-Create `.env.local` file (optional):
+export async function POST(request: NextRequest) {
+  const { value, type } = await request.json();
+
+  // Perform encryption
+  const encrypted = await encryptValue(value, type);
+
+  return NextResponse.json({
+    success: true,
+    encrypted,
+  });
+}
+```
+
+## Components Guide
+
+### UI Components
+
+**Button Component**
+```tsx
+import { Button } from '@/components/ui/Button';
+
+<Button variant="primary" size="medium" onClick={handleClick}>
+  Click Me
+</Button>
+```
+
+**Input Component**
+```tsx
+import { Input } from '@/components/ui/Input';
+
+<Input
+  type="number"
+  label="Amount"
+  value={amount}
+  onChange={(e) => setAmount(e.target.value)}
+  error={errorMessage}
+/>
+```
+
+**Card Component**
+```tsx
+import { Card } from '@/components/ui/Card';
+
+<Card title="My Card" subtitle="Card description">
+  <p>Card content</p>
+</Card>
+```
+
+### FHE Components
+
+All FHE components are pre-built and ready to use:
+
+- `EncryptionDemo` - Interactive encryption demonstration
+- `ComputationDemo` - Homomorphic computation examples
+- `KeyManager` - Public key management interface
+
+### Example Components
+
+Use these as templates for your own applications:
+
+- `BankingExample` - Financial privacy patterns
+- `MedicalExample` - Healthcare data privacy
+
+## API Routes
+
+### Encryption Endpoint
+
+**POST** `/api/fhe/encrypt`
+
+```json
+{
+  "value": 1500,
+  "type": "euint32"
+}
+```
+
+Response:
+```json
+{
+  "success": true,
+  "encrypted": {
+    "ciphertext": "...",
+    "type": "euint32",
+    "timestamp": 1234567890
+  }
+}
+```
+
+### Decryption Endpoint
+
+**POST** `/api/fhe/decrypt`
+
+```json
+{
+  "ciphertext": "...",
+  "signature": "..."
+}
+```
+
+### Computation Endpoint
+
+**POST** `/api/fhe/compute`
+
+```json
+{
+  "operation": "add",
+  "operands": [
+    { "ciphertext": "...", "type": "euint32" },
+    { "ciphertext": "...", "type": "euint32" }
+  ]
+}
+```
+
+### Key Management Endpoint
+
+**GET** `/api/keys`
+
+Returns the public encryption key.
+
+## Custom Hooks
+
+### useFHE
+
+Extended FHE operations:
+
+```tsx
+import { useFHE } from '@/hooks/useFHE';
+
+const { isReady, isInitializing, error, client } = useFHE();
+```
+
+### useEncryption
+
+Enhanced encryption with error handling:
+
+```tsx
+import { useEncryption } from '@/hooks/useEncryption';
+
+const { encrypt, encryptBool, isEncrypting, error, clearError } = useEncryption();
+
+// Encrypt with type specification
+const encrypted = await encrypt(1500, 'euint32');
+```
+
+### useComputation
+
+Homomorphic computation utilities:
+
+```tsx
+import { useComputation } from '@/hooks/useComputation';
+
+const { compute, isComputing, error } = useComputation();
+
+// Perform computation
+const result = await compute('add', [encrypted1, encrypted2]);
+```
+
+## Type Definitions
+
+All TypeScript types are available:
+
+```typescript
+import type {
+  EncryptedType,
+  EncryptedValue,
+  FHEClientConfig,
+  PublicKey,
+  HomomorphicOperation,
+  EncryptRequest,
+  DecryptRequest,
+} from '@/types/fhe';
+```
+
+## Environment Variables
+
+Create `.env.local` (optional):
 
 ```env
 NEXT_PUBLIC_CONTRACT_ADDRESS=0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5
 NEXT_PUBLIC_NETWORK=sepolia
 ```
 
-### MetaMask Setup
+## Configuration
 
-1. Install MetaMask extension
-2. Add Sepolia testnet
-3. Get Sepolia ETH from faucets:
-   - [Alchemy Faucet](https://sepoliafaucet.com/)
-   - [Infura Faucet](https://www.infura.io/faucet/sepolia)
-4. Connect MetaMask to the app
+### Next.js Config
 
-## Key Components
-
-### FhevmProvider
-
-Wraps the entire app to provide FHEVM functionality:
-
-```tsx
-<FhevmProvider
-  config={{
-    network: 'sepolia',  // or 'localhost', 'custom'
-    contractAddress: '0x...',  // optional
-    gatewayUrl: '...'  // optional
-  }}
->
-  {children}
-</FhevmProvider>
+```javascript
+// next.config.js
+const nextConfig = {
+  reactStrictMode: true,
+  webpack: (config) => {
+    config.resolve.fallback = {
+      fs: false,
+      net: false,
+      tls: false,
+    };
+    return config;
+  },
+};
 ```
 
-### Hooks
+### TypeScript Config
 
-**useFhevm()**
-```tsx
-const { client, isInitialized, error } = useFhevm();
+Path aliases configured for easy imports:
+
+```json
+{
+  "compilerOptions": {
+    "paths": {
+      "@/*": ["./*"]
+    }
+  }
+}
 ```
 
-**useEncrypt()**
+## Best Practices
+
+### 1. Always Check Initialization
+
 ```tsx
-const { encrypt32, encrypt16, encrypt8, encryptBool, isEncrypting, error } = useEncrypt();
+const { isInitialized } = useFhevm();
+
+if (!isInitialized) {
+  return <div>Initializing FHEVM...</div>;
+}
 ```
 
-**useDecrypt()**
+### 2. Handle Loading States
+
 ```tsx
-const { decrypt, isDecrypting, error } = useDecrypt();
+<button disabled={isEncrypting || isLoading}>
+  {isEncrypting ? 'Processing...' : 'Submit'}
+</button>
 ```
 
-**useContract()**
+### 3. Validate Inputs
+
 ```tsx
-const { contract, call, send, isLoading, error } = useContract({ address, abi });
+import { validateUint32 } from '@/lib/utils/validation';
+
+if (!validateUint32(value)) {
+  setError('Invalid value for euint32');
+  return;
+}
 ```
 
-## Features Demonstrated
-
-### Client-Side Encryption
-
-All encryption happens in the browser before data is sent to the blockchain:
+### 4. Implement Error Handling
 
 ```tsx
-const encrypted = await encrypt32(1500);
-// encrypted.ciphertext: Uint8Array (never decrypted on-chain)
-// encrypted.signature: string (for verification)
+try {
+  const encrypted = await encrypt32(value);
+} catch (error) {
+  console.error('Encryption failed:', error);
+  setError(error.message);
+}
 ```
 
-### Smart Contract Interaction
-
-Send encrypted data to smart contracts:
+### 5. Use Type Safety
 
 ```tsx
-const tx = await send('updateConsumptionData', powerUsage, efficiencyScore);
-await tx.wait();
-```
+import type { EncryptedValue } from '@/types/fhe';
 
-### Permission-Based Decryption
-
-Decrypt data with EIP-712 signatures:
-
-```tsx
-const decrypted = await decrypt({
-  contractAddress: '0x...',
-  ciphertext: encryptedData,
-  userAddress: '0x...'
-});
+const [encrypted, setEncrypted] = useState<EncryptedValue | null>(null);
 ```
 
 ## Troubleshooting
 
-### MetaMask Not Detected
+### FHEVM Not Initializing
 
-Make sure MetaMask is installed and enabled.
+- Check network configuration
+- Verify MetaMask is connected
+- Ensure you're on Sepolia testnet
 
-### Wrong Network
+### Encryption Failing
 
-Switch to Sepolia testnet in MetaMask.
+- Validate input values for the encrypted type
+- Check public key availability
+- Verify client initialization
 
-### Initialization Failed
+### Transaction Errors
 
-Check console for errors and ensure you're connected to Sepolia.
+- Ensure sufficient Sepolia ETH for gas
+- Check contract address is correct
+- Verify ABI matches the contract
 
-### Transaction Failed
+## Performance Tips
 
-Ensure you have enough Sepolia ETH for gas fees.
+1. **Initialize Once**: Set up FhevmProvider at the root
+2. **Cache Results**: Store encrypted values to avoid re-encryption
+3. **Batch Operations**: Combine multiple FHE operations when possible
+4. **Lazy Load**: Use dynamic imports for heavy components
+
+## Security Considerations
+
+- ✅ Client-side encryption before blockchain submission
+- ✅ Input sanitization for all user inputs
+- ✅ Validation for encrypted types
+- ✅ Secure key management
+- ✅ Error messages don't leak sensitive data
 
 ## Learning Resources
 
-- [Zama Documentation](https://docs.zama.ai)
-- [FHEVM Documentation](https://www.fhevm.io/)
-- [Next.js Documentation](https://nextjs.org/docs)
-- [SDK Documentation](../../packages/fhevm-sdk/README.md)
+- **Main Documentation**: [../../README.md](../../README.md)
+- **SDK Documentation**: [../../packages/fhevm-sdk/README.md](../../packages/fhevm-sdk/README.md)
+- **Integration Guide**: [../../docs/SDK_INTEGRATION.md](../../docs/SDK_INTEGRATION.md)
+- **Zama Documentation**: [docs.zama.ai](https://docs.zama.ai)
+- **FHEVM Documentation**: [fhevm.io](https://www.fhevm.io/)
+
+## Support
+
+For issues or questions:
+
+- Review the example code and documentation
+- Check the SDK documentation
+- Consult Zama resources
+- Join the Zama Discord community
 
 ## License
 
-MIT License
+MIT License - See LICENSE file for details
+
+---
+
+**Built with Zama FHEVM** - Empowering privacy-preserving applications
