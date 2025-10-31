@@ -1,37 +1,48 @@
-# 🔐 PowerConsumptionOptimizer - FHEVM Example dApp
+# 🔐 FHEVM React Template with SDK Integration
 
-> Privacy-preserving energy analytics demonstrating Zama's Fully Homomorphic Encryption
+> Complete development environment for building privacy-preserving applications with Zama's Fully Homomorphic Encryption
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Solidity](https://img.shields.io/badge/Solidity-0.8.24-blue.svg)](https://soliditylang.org/)
 [![FHE](https://img.shields.io/badge/FHE-Zama-purple.svg)](https://www.zama.ai/)
+[![React](https://img.shields.io/badge/React-18.0-blue.svg)](https://reactjs.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-14.0-black.svg)](https://nextjs.org/)
 
 📺 **Video Demo**: [demo.mp4]
 
 🌐 **Live Contract**: [View on Sepolia](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)
 
-🌐 **Live Demo**:  [View](https://fhe-power-consumption-optimizer.vercel.app) 
+🌐 **Live Demo**: [View](https://fhe-power-consumption-optimizer.vercel.app)
+
 ---
 
 ## 📋 Overview
 
-**PowerConsumptionOptimizer** is a complete example dApp demonstrating how to build privacy-preserving applications using **Zama's FHEVM** (Fully Homomorphic Encryption Virtual Machine). This project showcases real-world FHE usage in the energy analytics domain.
+This is a **complete development template** for building privacy-preserving applications using **Zama's FHEVM** (Fully Homomorphic Encryption Virtual Machine). It includes:
 
-### What This Demonstrates
+- 🎯 **FHEVM SDK** - React hooks and utilities for encryption/decryption
+- ⚡ **Smart Contract Examples** - Production-ready FHE contracts
+- 🔧 **Development Tools** - Hardhat, TypeScript, testing frameworks
+- 📦 **Example Applications** - Next.js and React demonstrations
+- 🚀 **Deployment Scripts** - Ready for Sepolia testnet
 
-This example dApp shows developers how to:
+### What This Template Provides
 
-✅ **Use Encrypted Data Types**: Work with `euint32`, `euint16`, and `ebool`
-✅ **Perform Homomorphic Operations**: Execute `FHE.add()`, `FHE.sub()`, `FHE.mul()`, `FHE.ge()`, `FHE.select()`
-✅ **Manage Permissions**: Control data access with `FHE.allow()` and `FHE.allowThis()`
-✅ **Build Privacy-First dApps**: Design applications where sensitive data never gets decrypted on-chain
-✅ **Optimize for Production**: Achieve gas efficiency and security best practices
+✅ **FHEVM SDK Integration**: React hooks (`useEncrypt`, `useDecrypt`, `useContract`)
+✅ **Encrypted Data Types**: Work with `euint32`, `euint16`, `euint8`, and `ebool`
+✅ **Homomorphic Operations**: Use `FHE.add()`, `FHE.sub()`, `FHE.mul()`, `FHE.ge()`, `FHE.select()`
+✅ **Permission Management**: Control data access with `FHE.allow()` and `FHE.allowThis()`
+✅ **Complete Examples**: Two production-ready example applications
+✅ **Testing Suite**: 51+ comprehensive tests with 95% coverage
+✅ **Production Ready**: Gas-optimized, security-hardened, fully documented
 
-### The Problem It Solves
+### Example Application: PowerConsumptionOptimizer
 
-Energy consumption data reveals sensitive information about personal habits, commercial operations, and infrastructure vulnerabilities. Traditional systems expose this data to utilities, aggregators, and potential attackers.
+The included example demonstrates privacy-preserving energy analytics:
 
-**Our Solution**: Perform all analytics on encrypted data using Fully Homomorphic Encryption, ensuring complete privacy while enabling optimization, billing verification, and grid coordination.
+**The Problem**: Energy consumption data reveals sensitive information about personal habits, commercial operations, and infrastructure vulnerabilities.
+
+**The Solution**: Perform all analytics on encrypted data using Fully Homomorphic Encryption, ensuring complete privacy while enabling optimization, billing verification, and grid coordination.
 
 ---
 
@@ -148,13 +159,21 @@ Sepolia ETH (from faucets)
 ### Installation
 
 ```bash
+# Clone or download this template
+git clone <repository-url>
+cd fhevm-react-template
+
 # Install dependencies
 npm install
 
 # Configure environment
 cp .env.example .env
 # Edit .env with your RPC URL and private key
+```
 
+### Smart Contract Development
+
+```bash
 # Compile contracts
 npm run compile
 
@@ -166,17 +185,455 @@ npm run deploy
 
 # Verify on Etherscan
 npm run verify
+
+# Interact with deployed contract
+npm run interact
 ```
 
-### Interact with Deployed Contract
+### Frontend Development (SDK)
 
 ```bash
-# Use interaction script
-npm run interact
+# Navigate to Next.js example
+cd examples/nextjs-example
 
-# Or use Hardhat console
-npx hardhat console --network sepolia
+# Install dependencies
+npm install
+
+# Run development server
+npm run dev
+
+# Open http://localhost:3000
 ```
+
+---
+
+## 📦 SDK Integration Guide
+
+This template includes the `@fhevm-example/sdk` for seamless integration with React and Next.js applications.
+
+### Setup Provider
+
+Wrap your application with `FhevmProvider`:
+
+```tsx
+// app/layout.tsx (Next.js App Router)
+import { FhevmProvider } from '@fhevm-example/sdk';
+
+export default function RootLayout({ children }) {
+  return (
+    <html lang="en">
+      <body>
+        <FhevmProvider config={{ network: 'sepolia' }}>
+          {children}
+        </FhevmProvider>
+      </body>
+    </html>
+  );
+}
+```
+
+```tsx
+// pages/_app.tsx (Next.js Pages Router)
+import { FhevmProvider } from '@fhevm-example/sdk';
+
+export default function App({ Component, pageProps }) {
+  return (
+    <FhevmProvider config={{ network: 'sepolia' }}>
+      <Component {...pageProps} />
+    </FhevmProvider>
+  );
+}
+```
+
+### Using SDK Hooks
+
+#### 1. Encryption Hook
+
+```tsx
+import { useEncrypt } from '@fhevm-example/sdk';
+
+export default function EncryptComponent() {
+  const { encrypt32, encrypt16, encrypt8, encryptBool, isEncrypting } = useEncrypt();
+
+  const handleEncrypt = async () => {
+    // Encrypt different data types
+    const encrypted32 = await encrypt32(1500);       // euint32
+    const encrypted16 = await encrypt16(750);        // euint16
+    const encrypted8 = await encrypt8(42);           // euint8
+    const encryptedBool = await encryptBool(true);   // ebool
+
+    console.log('Encrypted data:', encrypted32);
+  };
+
+  return (
+    <button onClick={handleEncrypt} disabled={isEncrypting}>
+      {isEncrypting ? 'Encrypting...' : 'Encrypt Data'}
+    </button>
+  );
+}
+```
+
+#### 2. Contract Interaction Hook
+
+```tsx
+import { useContract } from '@fhevm-example/sdk';
+import { PowerConsumptionOptimizerABI } from './abis';
+
+const CONTRACT_ADDRESS = '0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5';
+
+export default function ContractComponent() {
+  const { contract, call, send, isLoading } = useContract({
+    address: CONTRACT_ADDRESS,
+    abi: PowerConsumptionOptimizerABI,
+  });
+
+  // Read from contract (view functions)
+  const getTotalDevices = async () => {
+    const total = await call('totalDevices');
+    console.log('Total devices:', total.toString());
+  };
+
+  // Write to contract (state-changing functions)
+  const registerDevice = async () => {
+    const tx = await send('registerDevice', 'Smart Thermostat');
+    await tx.wait();
+    console.log('Device registered!');
+  };
+
+  // Send encrypted data
+  const updateConsumption = async (powerUsage: number, efficiency: number) => {
+    const tx = await send('updateConsumptionData', powerUsage, efficiency);
+    await tx.wait();
+    console.log('Consumption updated!');
+  };
+
+  return (
+    <div>
+      <button onClick={getTotalDevices}>Get Total Devices</button>
+      <button onClick={registerDevice} disabled={isLoading}>
+        {isLoading ? 'Processing...' : 'Register Device'}
+      </button>
+      <button onClick={() => updateConsumption(1500, 750)}>
+        Update Consumption
+      </button>
+    </div>
+  );
+}
+```
+
+#### 3. Decryption Hook
+
+```tsx
+import { useDecrypt } from '@fhevm-example/sdk';
+
+export default function DecryptComponent() {
+  const { decrypt, isDecrypting } = useDecrypt();
+
+  const handleDecrypt = async (encryptedData: string) => {
+    const decrypted = await decrypt({
+      contractAddress: CONTRACT_ADDRESS,
+      ciphertext: encryptedData,
+      userAddress: account,
+    });
+
+    console.log('Decrypted value:', decrypted);
+  };
+
+  return (
+    <button onClick={() => handleDecrypt(data)} disabled={isDecrypting}>
+      {isDecrypting ? 'Decrypting...' : 'Decrypt Data'}
+    </button>
+  );
+}
+```
+
+#### 4. FHEVM Instance Hook
+
+```tsx
+import { useFhevm } from '@fhevm-example/sdk';
+
+export default function FhevmComponent() {
+  const { client, isInitialized, error } = useFhevm();
+
+  if (!isInitialized) {
+    return <div>Initializing FHEVM...</div>;
+  }
+
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
+
+  return <div>FHEVM is ready!</div>;
+}
+```
+
+### Complete Example Integration
+
+Here's a complete example combining all hooks:
+
+```tsx
+'use client';
+
+import { useEncrypt, useContract, useFhevm } from '@fhevm-example/sdk';
+import { PowerConsumptionOptimizerABI } from '@/lib/abis';
+import { useState } from 'react';
+
+const CONTRACT_ADDRESS = '0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5';
+
+export default function EnergyDashboard() {
+  const { isInitialized, error: fhevmError } = useFhevm();
+  const { encrypt32, encrypt16, isEncrypting } = useEncrypt();
+  const { call, send, isLoading } = useContract({
+    address: CONTRACT_ADDRESS,
+    abi: PowerConsumptionOptimizerABI,
+  });
+
+  const [powerUsage, setPowerUsage] = useState<number>(1500);
+  const [efficiency, setEfficiency] = useState<number>(750);
+  const [totalDevices, setTotalDevices] = useState<number>(0);
+
+  // Register device
+  const handleRegister = async () => {
+    try {
+      const tx = await send('registerDevice', 'Smart Thermostat');
+      await tx.wait();
+      alert('Device registered successfully!');
+    } catch (error) {
+      console.error('Registration failed:', error);
+    }
+  };
+
+  // Update consumption with encrypted data
+  const handleUpdateConsumption = async () => {
+    try {
+      // Client-side encryption happens automatically
+      const tx = await send('updateConsumptionData', powerUsage, efficiency);
+      await tx.wait();
+      alert('Consumption data updated!');
+    } catch (error) {
+      console.error('Update failed:', error);
+    }
+  };
+
+  // Get total devices
+  const handleGetTotal = async () => {
+    try {
+      const total = await call('totalDevices');
+      setTotalDevices(Number(total));
+    } catch (error) {
+      console.error('Query failed:', error);
+    }
+  };
+
+  if (!isInitialized) {
+    return <div>Initializing FHEVM client...</div>;
+  }
+
+  if (fhevmError) {
+    return <div>Error initializing FHEVM: {fhevmError.message}</div>;
+  }
+
+  return (
+    <div className="p-8">
+      <h1 className="text-2xl font-bold mb-6">Energy Dashboard</h1>
+
+      <div className="space-y-4">
+        {/* Register Device */}
+        <div>
+          <button
+            onClick={handleRegister}
+            disabled={isLoading}
+            className="px-4 py-2 bg-blue-500 text-white rounded"
+          >
+            {isLoading ? 'Processing...' : 'Register Device'}
+          </button>
+        </div>
+
+        {/* Update Consumption */}
+        <div className="space-y-2">
+          <input
+            type="number"
+            value={powerUsage}
+            onChange={(e) => setPowerUsage(Number(e.target.value))}
+            placeholder="Power Usage (W)"
+            className="border p-2 rounded"
+          />
+          <input
+            type="number"
+            value={efficiency}
+            onChange={(e) => setEfficiency(Number(e.target.value))}
+            placeholder="Efficiency Score (0-1000)"
+            className="border p-2 rounded"
+          />
+          <button
+            onClick={handleUpdateConsumption}
+            disabled={isLoading || isEncrypting}
+            className="px-4 py-2 bg-green-500 text-white rounded"
+          >
+            {isLoading || isEncrypting ? 'Processing...' : 'Update Consumption'}
+          </button>
+        </div>
+
+        {/* Get Statistics */}
+        <div>
+          <button
+            onClick={handleGetTotal}
+            className="px-4 py-2 bg-purple-500 text-white rounded"
+          >
+            Get Total Devices
+          </button>
+          {totalDevices > 0 && (
+            <p className="mt-2">Total Devices: {totalDevices}</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+}
+```
+
+---
+
+## 📁 Project Structure
+
+```
+fhevm-react-template/
+├── examples/                         # Example applications
+│   ├── nextjs-example/              # Next.js SDK integration example
+│   │   ├── app/                     # App Router (Next.js 13+)
+│   │   │   ├── layout.tsx           # Root layout with FhevmProvider
+│   │   │   ├── page.tsx             # Home page
+│   │   │   ├── globals.css          # Global styles
+│   │   │   └── api/                 # API routes
+│   │   │       └── fhe/
+│   │   │           ├── route.ts     # FHE operations route
+│   │   │           ├── encrypt/     # Encryption API
+│   │   │           ├── decrypt/     # Decryption API
+│   │   │           └── compute/     # Homomorphic computation API
+│   │   ├── components/              # React components
+│   │   │   ├── ui/                  # Base UI components
+│   │   │   │   ├── Button.tsx
+│   │   │   │   ├── Input.tsx
+│   │   │   │   └── Card.tsx
+│   │   │   ├── fhe/                 # FHE functionality components
+│   │   │   │   ├── FHEProvider.tsx  # FHE context provider
+│   │   │   │   ├── EncryptionDemo.tsx
+│   │   │   │   ├── ComputationDemo.tsx
+│   │   │   │   └── KeyManager.tsx
+│   │   │   └── examples/            # Use case examples
+│   │   │       ├── BankingExample.tsx
+│   │   │       └── MedicalExample.tsx
+│   │   ├── lib/                     # Utility libraries
+│   │   │   ├── fhe/                 # FHE integration library
+│   │   │   │   ├── client.ts        # Client-side FHE operations
+│   │   │   │   ├── server.ts        # Server-side FHE operations
+│   │   │   │   ├── keys.ts          # Key management
+│   │   │   │   └── types.ts         # Type definitions
+│   │   │   └── utils/               # Utility functions
+│   │   │       ├── security.ts
+│   │   │       └── validation.ts
+│   │   ├── hooks/                   # Custom React hooks
+│   │   │   ├── useFHE.ts            # FHE operations hook
+│   │   │   ├── useEncryption.ts     # Encryption hook
+│   │   │   └── useComputation.ts    # Computation hook
+│   │   ├── types/                   # TypeScript types
+│   │   │   ├── fhe.ts               # FHE-related types
+│   │   │   └── api.ts               # API type definitions
+│   │   └── README.md                # Next.js example documentation
+│   │
+│   └── power-optimizer/             # Smart contract example
+│       ├── contracts/
+│       │   └── PowerConsumptionOptimizer.sol
+│       ├── scripts/
+│       │   ├── deploy.js
+│       │   ├── verify.js
+│       │   └── interact.js
+│       ├── test/
+│       │   ├── PowerConsumptionOptimizer.test.js
+│       │   └── PowerConsumptionOptimizer.sepolia.test.js
+│       └── README.md                # Smart contract example documentation
+│
+├── packages/                         # Shared packages (optional)
+│   └── fhevm-sdk/                   # FHEVM SDK source (if building from source)
+│
+├── docs/                            # Documentation
+│   ├── ARCHITECTURE.md
+│   ├── DEPLOYMENT_GUIDE.md
+│   ├── TESTING_GUIDE.md
+│   └── API_REFERENCE.md
+│
+├── hardhat.config.js                # Hardhat configuration
+├── package.json                     # Project dependencies
+└── README.md                        # This file
+```
+
+---
+
+## 📚 Included Examples
+
+This template includes two complete example applications:
+
+### 1. Next.js Example (`examples/nextjs-example/`)
+
+**Complete Next.js application demonstrating SDK integration**
+
+Features:
+- ✅ FhevmProvider setup with App Router
+- ✅ React hooks for encryption/decryption
+- ✅ Smart contract interaction with encrypted data
+- ✅ Client-side rendering with FHEVM
+- ✅ TypeScript support
+- ✅ API routes for server-side FHE operations
+
+**Quick Start:**
+```bash
+cd examples/nextjs-example
+npm install
+npm run dev
+```
+
+Open [http://localhost:3000](http://localhost:3000) to see the demo.
+
+**What it demonstrates:**
+- Encrypting different data types (euint32, euint16, euint8, ebool)
+- Interacting with smart contracts using `useContract` hook
+- Managing encrypted state in React components
+- Building a complete privacy-preserving dashboard
+
+[View Full Documentation →](examples/nextjs-example/README.md)
+
+---
+
+### 2. PowerConsumptionOptimizer Example (`examples/power-optimizer/`)
+
+**Production-ready smart contract demonstrating FHE operations**
+
+Features:
+- ✅ Complete Solidity contract using encrypted types
+- ✅ Homomorphic operations (add, sub, mul, ge, select)
+- ✅ Permission management (FHE.allow, FHE.allowThis)
+- ✅ Deployed and verified on Sepolia testnet
+- ✅ 51 comprehensive tests with 95%+ coverage
+- ✅ Security-hardened with pre-commit hooks
+
+**Quick Start:**
+```bash
+cd examples/power-optimizer
+npm install
+npm test
+npm run deploy
+```
+
+**What it demonstrates:**
+- Encrypted data storage (euint32, euint16)
+- Homomorphic computation on encrypted values
+- Privacy-preserving analytics
+- Permission-based access control
+- Gas-optimized FHE operations
+
+**Live Contract:** [0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)
+
+[View Full Documentation →](examples/power-optimizer/README.md)
 
 ---
 
@@ -590,16 +1047,69 @@ npm run ci               # Full CI pipeline
 
 ### Core Documentation
 
-- **[README.md](./README.md)** - This file (project overview)
+- **[README.md](./README.md)** - This file (project overview and SDK guide)
 - **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical architecture and FHE implementation details
 - **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
 - **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive testing documentation
-- **[SUBMISSION.md](./SUBMISSION.md)** - Competition submission overview
+
+### Example Documentation
+
+- **[Next.js Example README](./examples/nextjs-example/README.md)** - Complete SDK integration guide
+- **[PowerOptimizer Example README](./examples/power-optimizer/README.md)** - Smart contract implementation guide
+
+### SDK API Reference
+
+#### Available Hooks
+
+| Hook | Purpose | Returns |
+|------|---------|---------|
+| `useFhevm()` | Access FHEVM client instance | `{ client, isInitialized, error }` |
+| `useEncrypt()` | Encrypt data client-side | `{ encrypt32, encrypt16, encrypt8, encryptBool, isEncrypting, error }` |
+| `useDecrypt()` | Decrypt encrypted data | `{ decrypt, isDecrypting, error }` |
+| `useContract()` | Interact with smart contracts | `{ contract, call, send, isLoading, error }` |
+
+#### Provider Configuration
+
+```tsx
+interface FhevmProviderConfig {
+  network: 'sepolia' | 'localhost' | 'custom';
+  contractAddress?: string;       // Optional: default contract
+  gatewayUrl?: string;            // Optional: custom gateway
+  rpcUrl?: string;                // Optional: custom RPC
+}
+```
+
+#### Encryption Functions
+
+```tsx
+// Encrypt 32-bit unsigned integer
+encrypt32(value: number): Promise<EncryptedData>
+
+// Encrypt 16-bit unsigned integer
+encrypt16(value: number): Promise<EncryptedData>
+
+// Encrypt 8-bit unsigned integer
+encrypt8(value: number): Promise<EncryptedData>
+
+// Encrypt boolean
+encryptBool(value: boolean): Promise<EncryptedData>
+```
+
+#### Contract Interaction
+
+```tsx
+// Read-only call (view/pure functions)
+call(functionName: string, ...args: any[]): Promise<any>
+
+// State-changing transaction
+send(functionName: string, ...args: any[]): Promise<TransactionResponse>
+```
 
 ### Additional Resources
 
 - **[DEMO_VIDEO_GUIDE.md](./DEMO_VIDEO_GUIDE.md)** - Guide for creating demo videos
-- **[PACKAGE_CHECKLIST.md](./PACKAGE_CHECKLIST.md)** - Submission checklist
+- **[Zama Documentation](https://docs.zama.ai)** - Official Zama FHE documentation
+- **[FHEVM Documentation](https://www.fhevm.io/)** - FHEVM-specific resources
 
 ---
 
@@ -640,40 +1150,60 @@ Automated quality gates:
 
 ## 🎯 What You'll Learn
 
-By studying this example dApp, you'll learn:
+By using this template, you'll learn:
+
+### SDK Integration
+
+1. **React/Next.js Integration**
+   - Setting up FhevmProvider in App Router and Pages Router
+   - Using React hooks for encryption and contract interaction
+   - Managing encrypted state in React components
+   - Building type-safe applications with TypeScript
+
+2. **Client-Side Encryption**
+   - Encrypting data before sending to blockchain
+   - Working with different encrypted types (euint32, euint16, euint8, ebool)
+   - Handling encryption states and loading indicators
+   - Error handling and user feedback
+
+3. **Contract Interaction**
+   - Calling view functions with `useContract`
+   - Sending transactions with encrypted parameters
+   - Handling transaction confirmations
+   - Managing wallet connections
 
 ### FHE Fundamentals
 
-1. **Encrypted Data Types**
+4. **Encrypted Data Types**
    - When to use `euint32` vs `euint16` vs `euint8`
    - How to work with `ebool` for encrypted booleans
    - Type conversion and casting
 
-2. **Homomorphic Operations**
+5. **Homomorphic Operations**
    - Addition: `FHE.add(a, b)`
    - Subtraction: `FHE.sub(a, b)`
    - Multiplication: `FHE.mul(a, b)`
    - Comparison: `FHE.ge()`, `FHE.lt()`, `FHE.eq()`
    - Conditional: `FHE.select(condition, ifTrue, ifFalse)`
 
-3. **Permission Management**
+6. **Permission Management**
    - When to use `FHE.allow(value, address)`
    - When to use `FHE.allowThis(value)`
    - Best practices for access control
 
 ### Smart Contract Patterns
 
-4. **State Management**
+7. **State Management**
    - Storing encrypted values in mappings
    - Managing arrays of encrypted data
    - Combining encrypted and public data
 
-5. **Gas Optimization**
+8. **Gas Optimization**
    - Minimizing FHE operations
    - Efficient data structures
    - Batching operations
 
-6. **Security Best Practices**
+9. **Security Best Practices**
    - Input validation
    - Access control modifiers
    - Event logging
@@ -681,30 +1211,38 @@ By studying this example dApp, you'll learn:
 
 ---
 
-## 🏆 Why This Example Stands Out
+## 🏆 Why Use This Template
 
-### 1. Real-World Application
-✅ Solves actual privacy problem in energy management
-✅ Production-quality code, not a toy example
+### 1. Complete Development Environment
+✅ Ready-to-use FHEVM SDK integration
+✅ Pre-configured build tools and testing frameworks
+✅ Two complete example applications
+✅ Production-quality code structure
+
+### 2. SDK-First Approach
+✅ React hooks for seamless FHE integration
+✅ TypeScript support with full type safety
+✅ Client-side encryption made simple
+✅ Comprehensive error handling
+
+### 3. Real-World Examples
+✅ Next.js application with API routes
+✅ Production-ready smart contract
 ✅ Deployed and verified on Sepolia testnet
+✅ Live demo available
 
-### 2. Comprehensive FHE Usage
-✅ Uses all major FHE operations (add, sub, mul, ge, select)
-✅ Demonstrates proper permission management
-✅ Shows encrypted state management patterns
-
-### 3. Developer-Friendly
+### 4. Developer-Friendly
 ✅ Well-documented code with inline comments
-✅ 51 comprehensive tests showing usage patterns
+✅ 51+ comprehensive tests showing usage patterns
 ✅ Complete deployment and interaction scripts
 ✅ Step-by-step guides for every operation
 
-### 4. Production-Ready
+### 5. Production-Ready
 ✅ 95%+ test coverage
-✅ Gas-optimized operations
+✅ Gas-optimized FHE operations
 ✅ Security-hardened with pre-commit hooks
-✅ CI/CD pipeline with GitHub Actions
-✅ Contract size within limits (22.4 KB / 24 KB)
+✅ Best practices for smart contract development
+✅ Optimized contract size (22.4 KB / 24 KB limit)
 
 ---
 
@@ -712,24 +1250,69 @@ By studying this example dApp, you'll learn:
 
 ### For Beginners
 
-1. **Start Here**: Read [ARCHITECTURE.md](./ARCHITECTURE.md) to understand the system
-2. **Run Tests**: Execute `npm test` and examine test files
-3. **Try Examples**: Use the FHE code examples above in Hardhat console
-4. **Deploy Locally**: Run `npm run node` and `npm run deploy:local`
+1. **Start with SDK Example**:
+   - Navigate to `examples/nextjs-example/`
+   - Run `npm install && npm run dev`
+   - Explore the SDK hooks in action
+
+2. **Understand FHE Basics**:
+   - Read the SDK Integration Guide above
+   - Try encrypting different data types
+   - Experiment with contract interactions
+
+3. **Run Smart Contract Tests**:
+   - Navigate to `examples/power-optimizer/`
+   - Run `npm test` to see 51 tests pass
+   - Examine test files to understand usage patterns
+
+4. **Deploy Locally**:
+   - Run local Hardhat node
+   - Deploy contracts locally
+   - Test end-to-end workflow
 
 ### For Intermediate Developers
 
-1. **Study Contract**: Read `contracts/PowerConsumptionOptimizer.sol`
-2. **Modify Examples**: Add new encrypted fields or operations
-3. **Write Tests**: Create new test cases for your modifications
-4. **Deploy to Testnet**: Use `npm run deploy` to deploy to Sepolia
+1. **Build Your Own Frontend**:
+   - Use the Next.js example as a starting point
+   - Integrate the SDK hooks into your UI
+   - Create custom components with encrypted data
+
+2. **Study Smart Contract Patterns**:
+   - Read `examples/power-optimizer/contracts/PowerConsumptionOptimizer.sol`
+   - Understand FHE operations (add, sub, mul, ge, select)
+   - Learn permission management patterns
+
+3. **Customize and Extend**:
+   - Add new encrypted fields or operations
+   - Write tests for your modifications
+   - Deploy to Sepolia testnet
+
+4. **Explore Advanced Features**:
+   - Implement decryption workflows
+   - Build complex homomorphic computations
+   - Optimize gas usage
 
 ### For Advanced Developers
 
-1. **Optimize Gas**: Experiment with different FHE operation patterns
-2. **Add Features**: Implement new encrypted analytics functions
-3. **Build Frontend**: Create a UI that interacts with the contract
-4. **Audit Security**: Review and improve security mechanisms
+1. **Build Production Applications**:
+   - Design your own privacy-preserving dApp
+   - Use this template as the foundation
+   - Implement custom business logic
+
+2. **Optimize Performance**:
+   - Experiment with different FHE operation patterns
+   - Minimize gas costs
+   - Implement batching strategies
+
+3. **Contribute and Share**:
+   - Improve the SDK or examples
+   - Build additional use case examples
+   - Share your implementations with the community
+
+4. **Security Auditing**:
+   - Review security mechanisms
+   - Conduct penetration testing
+   - Implement additional safeguards
 
 ---
 
@@ -802,33 +1385,69 @@ Free to use for learning, building, and commercial applications.
 
 ---
 
-## 💡 Next Steps
+## 💡 Getting Started
 
-After exploring this example:
+Ready to build your privacy-preserving application?
 
-1. **Learn More**: Read [ARCHITECTURE.md](./ARCHITECTURE.md) for technical deep-dive
-2. **Deploy**: Follow [DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md) to deploy your own
-3. **Test**: Study [TESTING_GUIDE.md](./TESTING_GUIDE.md) to understand testing patterns
-4. **Build**: Use this as a template for your own privacy-preserving dApp
-5. **Share**: Contribute improvements or build on this example
+### 1. Explore the Examples
+
+**Next.js SDK Example**:
+```bash
+cd examples/nextjs-example
+npm install
+npm run dev
+```
+Open [http://localhost:3000](http://localhost:3000) to see the SDK in action.
+
+**Smart Contract Example**:
+```bash
+cd examples/power-optimizer
+npm install
+npm test
+npm run deploy
+```
+
+### 2. Read the Documentation
+
+- **[SDK Integration Guide](#-sdk-integration-guide)** - Learn how to use the React hooks
+- **[ARCHITECTURE.md](./ARCHITECTURE.md)** - Technical deep-dive into FHE implementation
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+- **[TESTING_GUIDE.md](./TESTING_GUIDE.md)** - Comprehensive testing patterns
+
+### 3. Build Your Application
+
+Use this template as the foundation for your own privacy-preserving application:
+
+1. Clone or fork this repository
+2. Study the example implementations
+3. Customize the smart contracts for your use case
+4. Build your frontend using the SDK hooks
+5. Deploy to Sepolia testnet
+6. Share your creation with the community
+
+### 4. Get Help
+
+- **[Zama Discord](https://discord.com/invite/fhe)** - Join the community
+- **[Zama Documentation](https://docs.zama.ai)** - Official documentation
+- **[GitHub Issues](https://github.com/zama-ai)** - Report bugs or request features
 
 ---
 
 <div align="center">
 
-**PowerConsumptionOptimizer**
+**FHEVM React Template**
 
-*An example dApp demonstrating privacy-preserving analytics with Zama's FHEVM*
+*Complete development environment for building privacy-preserving applications*
 
-**[View Contract](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)** •
+**[View Live Contract](https://sepolia.etherscan.io/address/0x71FA4921E376f40CAD0e122E287F20da8e6AE9B5)** •
 **[Watch Demo](./demo.mp4)** •
-**[Read Architecture](./ARCHITECTURE.md)** •
-**[Deploy Guide](./DEPLOYMENT_GUIDE.md)**
+**[Next.js Example](./examples/nextjs-example/)** •
+**[Smart Contract Example](./examples/power-optimizer/)**
 
 ---
 
-Built with ❤️ using [Zama FHE](https://www.zama.ai/)
+Built with ❤️ using [Zama FHEVM](https://www.zama.ai/)
 
-*Demonstrating the future of confidential smart contracts*
+*Empowering developers to build the future of confidential smart contracts*
 
 </div>
